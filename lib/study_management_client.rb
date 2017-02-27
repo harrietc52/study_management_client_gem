@@ -4,9 +4,14 @@ require 'json'
 
 module StudyManagementClient
 
-  def self.get_nodes_with_cost_code
+  def self.get_proposals
 		conn = get_connection
 		filter(JSON.parse(conn.get('/api/v1/nodes/').body))
+	end
+
+	def self.get_proposal(id)
+		conn = get_connection
+		filter(JSON.parse(conn.get('/api/v1/nodes?filter[id]='+id).body))
 	end
 
 	private
