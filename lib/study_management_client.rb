@@ -1,6 +1,6 @@
-require "study_management_client/version"
-require 'faraday'
-require 'json'
+require_relative "study_management_client/version"
+require "faraday"
+require "zipkin-tracer"
 
 module StudyManagementClient
 
@@ -17,8 +17,8 @@ module StudyManagementClient
 	private
 
 	def self.get_connection
-		conn = Faraday.new(:url => ENV['STUDY_URL']) do |faraday|
-			faraday.proxy ENV['STUDY_URL']
+		conn = Faraday.new(:url => Rails.application.config.study_url) do |faraday|
+			faraday.proxy Rails.application.config.study_url
 			faraday.request  :url_encoded
 			faraday.response :logger
 			faraday.adapter  Faraday.default_adapter
@@ -31,9 +31,9 @@ module StudyManagementClient
 	def self.filter(obj)
 		obj = obj["data"].reject{|k,v| k["attributes"]["cost-code"].to_s.empty?}
 		obj.map { |item| filter_attrs(item) }
-  end
+ 	end
 
-  def self.filter_attrs(h)
-  	{id: h["id"], name: h["attributes"]["name"], cost_code: h["attributes"]["cost-code"]}
-  end
+	def self.filter_attrs(h)
+		{id: h["id"], name: h["attributes"]["name"], cost_code: h["attributes"]["cost-code"]}
+	end
 end
